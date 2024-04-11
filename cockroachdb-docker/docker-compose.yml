@@ -1,0 +1,21 @@
+version: '3.7'
+  
+services:
+  cockroachdb:
+    container_name: cockroach
+    image: cockroachdb/cockroach:v23.2.3
+    ports:
+      # Restrict access to specific IP addresses or ranges (replace with allowed IPs)
+      - "26257:26257"  # CockroachDB main port (restricted access)
+      - "8080:8080"
+    # Remove insecure mode and configure authentication
+    command: start-single-node --insecure
+    environment:
+      # Replace with strong, unique passwords for each user
+      - COCKROACH_USER=cockroach
+      - COCKROACH_PASSWORD=bbaa
+    volumes:
+      - cockroach-data:/cockroach/cockroach-data
+
+volumes:
+  cockroach-data:
