@@ -1,0 +1,12 @@
+version: '3'
+services:
+  cockroachdb-node1:
+    container_name: cockroach0
+    image: cockroachdb/cockroach:v23.2.3
+    volumes:
+      - /etc/cockroach:/certs
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+    restart: always
+    command: ["start", "--certs-dir=/etc/cockroach/", "--listen-addr=192.168.1.132:26257", "--join=192.168.1.133:26257"]
