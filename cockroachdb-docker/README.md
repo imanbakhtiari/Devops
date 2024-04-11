@@ -17,7 +17,7 @@ docker exec -it cocroach0 cockroach cert create-ca --certs-dir=/certs --ca-key=/
 ```
 ### For second node
 ```bash 
-ocker exec -it cockroach cockroach cert create-node second --certs-dir=/certs --ca-key=/certs/ca.key
+docker exec -it cockroach cockroach cert create-node second --certs-dir=/certs --ca-key=/certs/ca.key
 docker exec -it cockroach mv /certs/node.key /certs/second.key
 docker exec -it cockroach mv /certs/node.crt /certs/second.crt
 ```
