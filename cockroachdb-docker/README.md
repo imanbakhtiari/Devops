@@ -2,7 +2,7 @@
 
 ### first of all you need docker
 ### innstall dokcer from this link 
-{Docker Installation}(https://docs.docker.com/engine/install/ubuntu/)
+[Docker Installation](https://docs.docker.com/engine/install/ubuntu/)
 ### then pull cockroachdb image 
 ```bash
 sudo docker pull cockroachdb/cockroach:v23.2.3
