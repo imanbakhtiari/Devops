@@ -1,3 +1,4 @@
+```
 version: '2'
 
 volumes:
@@ -31,4 +32,4 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
-
+```
