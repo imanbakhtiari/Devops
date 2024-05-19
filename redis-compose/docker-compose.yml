@@ -1,0 +1,10 @@
+version: '2.1'
+services:
+  redis:
+    container_name: redis
+    image: redis:6.2-alpine
+    volumes:
+      - ./mc-redis-demo:/data
+    ports:
+      - "6379:6379"
+

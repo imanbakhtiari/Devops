@@ -1,0 +1,13 @@
+network:
+  ethernets:
+    ens192:
+      addresses:
+        - 10.130.5.190/24
+      dhcp4: false
+      routes:
+          - to: default
+            via: 10.130.5.1
+      nameservers:
+        addresses:
+          - 10.130.5.1
+  version: 2
