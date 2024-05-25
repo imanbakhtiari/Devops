@@ -1,0 +1,71 @@
+version: '3.7'
+services:
+  web:
+    image: 'gitlab/gitlab-ce:16.10.6-ce.0'
+    restart: always
+    hostname: 'localhost'
+    container_name: gitlab-ce
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.basa.ir'
+        gitlab_rails['gitlab_shell_ssh_port'] = 22
+        gitlab_rails['time_zone'] = 'Tehran'
+    expose:
+      - '80'
+      - '443'
+    volumes:
+      - '/opt/gitlab/config:/etc/gitlab'
+      - '/opt/gitlab/log:/var/log/gitlab'
+      - '/opt/gitlab/data:/var/opt/gitlab'
+      - '/opt/gitlab/certbot/conf:/etc/letsencrypt' # Ensure certificates are available to GitLab container
+    networks:
+      - gitlab
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:alpine
+    container_name: gitlab-runner
+    restart: always
+    depends_on:
+      - web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - '/opt/gitlab/gitlab-runner:/etc/gitlab-runner' # Mounts host directory to persist config.toml
+    networks:
+      - gitlab
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - '/opt/gitlab/nginx/conf.d:/etc/nginx/conf.d'
+      - '/opt/gitlab/certbot/www:/var/www/certbot'
+      - '/opt/gitlab/certbot/conf:/etc/letsencrypt'
+    networks:
+      - gitlab
+
+  certbot:
+    image: certbot/certbot:v2.10.0
+    container_name: certbot
+    volumes:
+      - '/opt/gitlab/certbot/conf:/etc/letsencrypt'
+      - '/opt/gitlab/certbot/www:/var/www/certbot'
+    entrypoint: >
+      /bin/sh -c '
+        if [ ! -f /etc/letsencrypt/live/gitlab.basa.ir/fullchain.pem ]; then
+          certbot certonly --webroot --webroot-path=/var/www/certbot -d gitlab.basa.ir --email imanbakhtiarinet@gmail.com --agree-tos --no-eff-email;
+        fi;
+        trap exit TERM;
+        while :; do
+          certbot renew --webroot --webroot-path=/var/www/certbot;
+          sleep 12h & wait $${!};
+        done;
+      '
+
+networks:
+  gitlab:
+    name: gitlab
+
