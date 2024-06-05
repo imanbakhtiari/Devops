@@ -44,3 +44,12 @@ pg_restore -h localhost -U postgres -C -d postgres -v wallet.backup
 ```
 psql -h localhost -U postgres -d wallet -f wallet.sql
 ```
+
+## Cutom for 16 Version
+```
+pg_dump -h 10.130.1.25 -p 5000 -U postgres -d wallet > wallet.sql
+```
+```
+psql -h localhost -U postgres -p 5432 -d wallet -f wallet.sql 
+```
+
