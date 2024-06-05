@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:1.30.5
+    container_name: vaultwarden
+    restart: always
+    volumes:
+      - ./vw-data/:/data/
+    environment:
+            # SIGNUPS_ALLOWED: 'true'
+            ROCKET_TLS: '{certs="/data/ssl/certs.pem",key="/data/ssl/key.pem"}'
+    ports:
+      - "8080:80"
+
