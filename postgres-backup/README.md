@@ -53,3 +53,7 @@ pg_dump -h 10.130.1.25 -p 5000 -U postgres -d wallet > wallet.sql
 psql -h localhost -U postgres -p 5432 -d wallet -f wallet.sql 
 ```
 
+### FORCE DROP DATABASE
+```
+SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'wallet' AND pid <> pg_backend_pid();
+```
