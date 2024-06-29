@@ -1,13 +1,15 @@
 version: '3.7'
 services:
   web:
-    image: 'gitlab/gitlab-ce:latest'
+    image: 'gitlab/gitlab-ce:17.0.0-ce.0'
     restart: always
     hostname: 'localhost'
-    container_name: gitlab-ce
+    container_name: gitlab
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://localhost'
+        gitlab_rails['gitlab_shell_ssh_port'] = 22
+        gitlab_rails['time_zone'] = 'Tehran'
     ports:
       - '8080:80'
       - '8443:443'
@@ -32,3 +34,4 @@ services:
 networks:
   gitlab:
     name: gitlab-network
+
