@@ -1,26 +1,33 @@
 version: '3.7'
 services:
   web:
-    image: 'gitlab/gitlab-ce:16.10.6-ce.0'
+    image: 'gitlab/gitlab-ce:17.0.0-ce.0'
     restart: always
-    hostname: 'localhost'
+    hostname: 'gitlab'
     container_name: gitlab-ce
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'https://gitlab.domain.ir'
+        external_url 'https://gitlab.sudoix.ir'
         gitlab_rails['gitlab_shell_ssh_port'] = 22
         gitlab_rails['time_zone'] = 'Tehran'
-    expose:
-      - '80'
-      - '443'
+        nginx['listen_port'] = 443
+        nginx['redirect_http_to_https'] = true
+        # Renew every 7th day of the month at 12:30
+        letsencrypt['enable'] = true
+        letsencrypt['auto_renew_hour'] = "12"
+        letsencrypt['auto_renew_minute'] = "30"
+        letsencrypt['auto_renew_day_of_month'] = "*/7"
+
+    ports:
+      - '80:80'
+      - '443:443'
+      - '22:22'
     volumes:
-      - '/opt/gitlab/config:/etc/gitlab'
-      - '/opt/gitlab/log:/var/log/gitlab'
-      - '/opt/gitlab/data:/var/opt/gitlab'
-      - '/opt/gitlab/certbot/conf:/etc/letsencrypt' # Ensure certificates are available to GitLab container
+      - './config:/etc/gitlab'
+      - './logs:/var/log/gitlab'
+      - './data:/var/opt/gitlab'
     networks:
       - gitlab
-
   gitlab-runner:
     image: gitlab/gitlab-runner:alpine
     container_name: gitlab-runner
@@ -29,41 +36,9 @@ services:
       - web
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - '/opt/gitlab/gitlab-runner:/etc/gitlab-runner' # Mounts host directory to persist config.toml
+      - './gitlab-runner:/etc/gitlab-runner'
     networks:
       - gitlab
-
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    restart: always
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - '/opt/gitlab/nginx/conf.d:/etc/nginx/conf.d'
-      - '/opt/gitlab/certbot/www:/var/www/certbot'
-      - '/opt/gitlab/certbot/conf:/etc/letsencrypt'
-    networks:
-      - gitlab
-
-  certbot:
-    image: certbot/certbot:v2.10.0
-    container_name: certbot
-    volumes:
-      - '/opt/gitlab/certbot/conf:/etc/letsencrypt'
-      - '/opt/gitlab/certbot/www:/var/www/certbot'
-    entrypoint: >
-      /bin/sh -c '
-        if [ ! -f /etc/letsencrypt/live/gitlab.basa.ir/fullchain.pem ]; then
-          certbot certonly --webroot --webroot-path=/var/www/certbot -d gitlab.basa.ir --email imanbakhtiarinet@gmail.com --agree-tos --no-eff-email;
-        fi;
-        trap exit TERM;
-        while :; do
-          certbot renew --webroot --webroot-path=/var/www/certbot;
-          sleep 12h & wait $${!};
-        done;
-      '
 
 networks:
   gitlab:
