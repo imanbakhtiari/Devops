@@ -12,7 +12,10 @@ nodes = [
 
 # Telegram Bot credentials
 TELEGRAM_BOT_TOKEN = "Your Token"
-TELEGRAM_CHAT_ID = "Your ChatID"
+TELEGRAM_CHAT_ID = "Your Chatid"
+
+green_circle = "\U0001F7E2"  # Green circle emoji
+red_circle = "\U0001F534"    # Red circle emoji
 
 # Dictionary to keep track of service status
 service_status = {}
@@ -56,7 +59,7 @@ def main():
                             3000: "Frontend"
                         }
                         service = service_map.get(port, f"Service on port {port}")
-                        message = f"{service} service on node {ip} is DOWN!"
+                        message = f"{red_circle}\nALERT\n{service} service on node {ip} is DOWN!"
                         send_telegram_message(message)
                         all_services_up = False  # Set to False if any service is down
                         disaster_detected = True  # Set disaster flag
@@ -80,11 +83,11 @@ def main():
                     break
 
             if all_services_up:
-                send_telegram_message("All services are back online. Disaster handled.")
+                send_telegram_message(f"{green_circle}\nAll services are back online. Disaster handled.")
                 disaster_detected = False  # Reset disaster flag
 
-        # Check every 5 minutes (adjust as needed)
-        time.sleep(300)
+        # Check every 10 seconds (adjust as needed)
+        time.sleep(10)
 
 if __name__ == "__main__":
     main()
