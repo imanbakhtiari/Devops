@@ -7,7 +7,7 @@ services:
     container_name: gitlab-ce
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'https://gitlab.sudoix.ir'
+        external_url 'https://gitlab.domain.tld'
         gitlab_rails['gitlab_shell_ssh_port'] = 22
         gitlab_rails['time_zone'] = 'Tehran'
         nginx['listen_port'] = 443
