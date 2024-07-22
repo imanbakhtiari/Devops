@@ -1,0 +1,39 @@
+sonarqube-check:
+  stage: sonarqube-check
+  image: gradle:8.2.0-jdk17-jammy
+  cache:
+    policy: pull
+    key: "${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - sonar-scanner/
+  script:
+    - pwd
+    - ip -br a
+    - ls
+    - cd wallet-service
+    - ./gradlew sonar
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+    - when: manual
+
+
+sonarqube-vulnerability-report:
+  stage: sonarqube-vulnerability-report
+  image: gradle:8.2.0-jdk17-jammy
+  script:
+    - pwd
+    - ip -br a
+    - ls
+    - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=PROJECT_527a9237-888a-45b8-991d-874f23898781&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
+  allow_failure: true
+  artifacts:
+    expire_in: 1 day
+    reports:
+      sast: gl-sast-sonar-report.json
+  rules:
+  when: manual
+
