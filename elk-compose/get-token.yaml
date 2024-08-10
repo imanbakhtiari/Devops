@@ -1,0 +1,9 @@
+curl -k -X POST "https://10.130.4.200:9200/_security/oauth2/token" \
+-H 'Content-Type: application/json' \
+-u elastic:dlHWJkg-Z+R50yh_eelC \
+-d '{
+  "grant_type": "password",
+  "username": "elastic",
+  "password": "dlHWJkg-Z+R50yh_eelC"
+}'
+
