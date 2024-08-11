@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: otel-collector
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    command: ["--config", "/etc/otel-collector-config.yaml"]
+    ports:
+      - "55680:55680"  # Prometheus metrics
+      - "14253:14250"  # Jaeger Thrift over HTTP
+    networks:
+      - observability
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "5775:5775"   # Zipkin thrift
+      - "5778:5778"   # Health check
+      - "14251:14250" # Jaeger gRPC
+      - "14268:14268" # Jaeger HTTP
+      - "14250:14250" # Jaeger gRPC
+      - "16686:16686" # Jaeger UI
+      - "14252:14250" # Jaeger Thrift over HTTP
+    networks:
+      - observability
+
+networks:
+  observability:
+    driver: bridge
+
+
