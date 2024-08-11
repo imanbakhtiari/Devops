@@ -1,0 +1,19 @@
+FROM openjdk:17-alpine
+
+# Set working directory in the container
+WORKDIR /app
+
+# Copy your application code
+COPY . .
+
+RUN apk add --no-cache tzdata
+
+# Run Gradle build excluding tests
+RUN ./gradlew build -x test
+
+# Expose port 5005 for remote debugging
+EXPOSE 5005
+EXPOSE 8090
+
+ENTRYPOINT ["java", "-Dgradle.allowInsecureProtocol=true", "-Duser.timezone=Asia/Tehran", "-Duser.timezone=GMT+3:30", "-jar", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-Dspring.profiles.active=test", "/app/build/libs/wallet-service-0.0.1-SNAPSHOT.jar"]
+
