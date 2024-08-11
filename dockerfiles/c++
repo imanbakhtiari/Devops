@@ -1,0 +1,18 @@
+# Start with a base image that has build tools
+FROM gcc:12
+
+# Set the Current Working Directory inside the container
+WORKDIR /app
+
+# Copy the C++ source code into the container
+COPY . .
+
+# Install any required packages (if necessary)
+RUN apt-get update && apt-get install -y cmake
+
+# Build the application using g++
+RUN g++ -o myapp main.cpp
+
+# Command to run the executable
+ENTRYPOINT ["./myapp"]
+
