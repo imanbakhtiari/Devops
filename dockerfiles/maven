@@ -1,0 +1,20 @@
+FROM maven:3.6.3-openjdk-17
+
+WORKDIR /app
+
+LABEL Author="I.Bakhtiari"
+
+# Copy the project files
+COPY . .
+
+# Build all dependencies for offline use
+RUN mvn clean install
+
+# Copy your other files
+#COPY . .
+
+EXPOSE 8080
+
+# Set the startup command to run your binary
+ENTRYPOINT ["java", "-jar", "./somejarfile.jar"]
+

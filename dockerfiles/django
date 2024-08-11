@@ -2,6 +2,7 @@ FROM python:3.11
 
 ENV PYTHONUNBUFFERED=1
 WORKDIR /app
+LABEL Author="I.Bakhtiari"
 
 # Required to install postgresql-client with Pip
 # RUN apt-get update && \
