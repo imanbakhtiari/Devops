@@ -1,0 +1,31 @@
+# Use the official Node.js 20-alpine image as the base image
+FROM node:20-alpine
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the package.json and package-lock.json files to the working directory
+COPY package*.json ./
+
+RUN apk add --no-cache tzdata
+
+# Install npm dependencies
+#RUN npm install --force --registry=http://10.130.4.110:8081/repository/npm-group/ 
+#--verbose --no-package-lock --registry=http://10.130.4.110:8081/repository/npm-group/ --legacy-peer-deps
+RUN npm install --force
+# Copy the rest of the application files to the working directory
+COPY . .
+
+# Build the application using the specified script
+## change it according to staging testing sandbox and etc 
+ENV BUILD_TAG=testing
+
+RUN npm run build:${BUILD_TAG}
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Set the entrypoint to start the application using the specified script
+ENTRYPOINT ["sh", "-c", "npm run start:${BUILD_TAG}"]
+
+
