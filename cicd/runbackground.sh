@@ -1,0 +1,1 @@
+- ssh sandbox 'cd /opt/app/web-UI/ && nohup bash -c "npm run start:sandbox >> /var/log/yourname.log 2>&1 &"' &
