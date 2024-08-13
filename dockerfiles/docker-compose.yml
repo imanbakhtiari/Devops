@@ -1,0 +1,22 @@
+version: '2.1'
+
+services:
+  walletback:
+    image: basename/walletback:v1
+    container_name: api
+    environment:
+      - TZ=${TZ}
+    build: .
+    ports:
+      - "8090:8090"
+      - "5005:5005"
+    restart: always
+    ## for dns resolve
+    dns:
+      - 1.1.1.1
+      - 10.202.10.202  # 403.online
+      - 10.202.10.102   # 403.online
+    ## for /etc/hosts
+    extra_hosts:
+      - "sso.domain.tld:10.130.5.7"
+
