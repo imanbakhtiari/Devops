@@ -1,0 +1,27 @@
+
+services:
+  jira:
+    image: jirahoopoe:v1
+    volumes:
+      - ./data/jira/conf:/opt/atlassian/jira
+      - ./data/jira/home:/var/atlassian/application-data/jira
+    build: .
+    ports:
+      - "8080:8080"
+    container_name: jira
+    environment:
+      - JIRA_HOME=/var/atlassian/application-data/jira
+    user: root
+    depends_on:
+      - jiraDB
+
+  jiraDB:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: jira
+      POSTGRES_USER: jira
+      POSTGRES_PASSWORD: qaz@123
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
