@@ -1,0 +1,17 @@
+<datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true">
+   <connection-url>jdbc:postgresql://10.130.1.25:5000/kc</connection-url>
+   <driver>postgresql</driver>
+   <pool>
+           <max-pool-size>100</max-pool-size>
+   </pool>
+   <security>
+           <user-name>postgres</user-name>
+           <password>password</password>
+   </security>
+   <validation>
+                <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"></valid-connection-checker>
+                <background-validation>true</background-validation>
+                <background-validation-millis>120000</background-validation-millis>
+   </validation>
+</datasource>
+
