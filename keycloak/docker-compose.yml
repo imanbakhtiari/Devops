@@ -1,0 +1,26 @@
+version: '2.1'
+
+services:
+  mykeycloak:
+    container_name: kc
+    image: kc:v1
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=change_me
+      - KC_PROXY=edge
+        #      - KC_HTTP_ENABLED=true
+    ports:
+      - "8443:8443"
+      - "8080:8080"
+        #    volumes:
+        #- /opt/keycloak/:/opt/keycloak/data/h2
+    restart: always
+    command: start --optimized
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://10.130.5.92:6066"  # Address of your syslog server or logstash to send logs (you can use tcp too)
+        tag: "kc"
+volumes:
+  keycloak:
+
