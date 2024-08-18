@@ -6,9 +6,13 @@ services:
     container_name: metabase
     ports:
       - "3000:3000"
+    environment:
+      - TZ=Asia/Tehran
     volumes:
       - ./plugins/ch.jar:/plugins/clickhouse.jar
       - metabase_data:/metabase-data
+      - metabase.db:/metabase.db
+    restart: always
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest
@@ -17,16 +21,20 @@ services:
       nofile:
         soft: 262144
         hard: 262144
+    environment:
+      - TZ=Asia/Tehran
     volumes:
       - ./ch_data:/var/lib/clickhouse/
       - ./ch_logs:/var/log/clickhouse-server/
-        #      - ./ch_conf/users.xml:/etc/clickhouse-server/users.xml
+      - ./ch_conf/users.xml:/etc/clickhouse-server/users.xml
+      - ./ch_conf/config.xml:/etc/clickhouse-server/config.xml
     ports:
       - "8123:8123"
       - "9000:9000"
       - "9009:9009"
+    restart: always
 
 volumes:
   metabase_data:
-    driver: local
+  metabase.db:
 
