@@ -1,38 +1,40 @@
-version: "3"
+version: '3'
 
 services:
   sonarqube:
-    image: sonarqube:lts-community
+    image: sonarqube:latest
+    container_name: sonarqube
     depends_on:
-      - sonar_db
-    environment:
-      SONAR_JDBC_URL: jdbc:postgresql://sonar_db:5432/sonar
-      SONAR_JDBC_USERNAME: sonar
-      SONAR_JDBC_PASSWORD: sonar
+      - db
     ports:
-      - "9001:9000"
+      - "9000:9000"
+    extra_hosts:
+      - "gitlab.domain.tld:10.130.4.10"
+    restart: always
+    environment:
+      - SONAR_JDBC_URL=jdbc:postgresql://db:5432/sonarqube
+      - SONAR_JDBC_USERNAME=sonar
+      - SONAR_JDBC_PASSWORD=sonar
     volumes:
       - sonarqube_conf:/opt/sonarqube/conf
       - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
       - sonarqube_logs:/opt/sonarqube/logs
-      - sonarqube_temp:/opt/sonarqube/temp
+      - sonarqube_extensions:/opt/sonarqube/extensions
 
-  sonar_db:
-    image: postgres:13
+  db:
+    image: postgres:latest
+    container_name: postgres
     environment:
-      POSTGRES_USER: sonar
-      POSTGRES_PASSWORD: sonar
-      POSTGRES_DB: sonar
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+      - POSTGRES_DB=sonarqube
     volumes:
-      - sonar_db:/var/lib/postgresql
-      - sonar_db_data:/var/lib/postgresql/data
+      - postgresql:/var/lib/postgresql
 
 volumes:
   sonarqube_conf:
   sonarqube_data:
-  sonarqube_extensions:
   sonarqube_logs:
-  sonarqube_temp:
-  sonar_db:
-  sonar_db_data:
+  sonarqube_extensions:
+  postgresql:
+
