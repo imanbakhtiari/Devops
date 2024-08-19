@@ -121,3 +121,12 @@ Google Dorking is a technique used to find information on the web using advanced
 - **`filetype:sql inurl:"backup"`**  
   Look for SQL backup files that could be exploited.
 
+## example for finding admin wordpress
+```
+site:domain.tld intitle: Log In inurl:wp-login.php
+```
+
+```
+site:domain.tld inurl:wp-admin
+```
+
