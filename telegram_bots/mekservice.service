@@ -1,0 +1,14 @@
+[Unit]
+Description=Python Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/username/path/to/code.py
+WorkingDirectory=/home/username/path/to/
+Restart=always
+User=username
+Group=username
+
+[Install]
+WantedBy=multi-user.target
+
