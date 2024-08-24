@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  nifi:
+    image: apache/nifi:latest
+    container_name: nifi
+    ports:
+      - "8080:8080"
+      - "10000:10000"
+    volumes:
+      - nifi-data:/opt/nifi/nifi-current/logs
+      - nifi-conf:/opt/nifi/nifi-current/conf
+      - /var/lib/docker/volumes/jdbc/_data/postgresql-42.7.3.jar:/opt/nifi/nifi-current/lib/postgresql-42.7.3.jar
+    environment:
+      NIFI_WEB_HTTP_PORT: 8080
+      NIFI_WEB_HTTP_HOST: 0.0.0.0
+    networks:
+      - nifi-net
+    restart: always
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - nifi-net
+    restart: always
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - nifi-net
+    restart: always
+
+  connect:
+    image: debezium/connect:latest
+    container_name: debezium-connect
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: "1"
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_REST_ADVERTISED_HOST_NAME: debezium-connect
+      CONNECT_PLUGIN_PATH: /kafka/connect,/usr/share/java
+      CONNECT_REST_PORT: 8083
+    volumes:
+      - connect-plugins:/kafka/connect
+    networks:
+      - nifi-net
+    restart: always
+
+volumes:
+  nifi-data:
+    driver: local
+  nifi-conf:
+    driver: local
+  connect-plugins:
+    driver: local
+
+networks:
+  nifi-net:
+    driver: bridge
+
