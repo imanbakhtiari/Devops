@@ -1,0 +1,4 @@
+CLIENT_DIR="/etc/VPN/bin"
+CONF_DIR="/etc/VPN/conf"
+MAIN_CLIENT_CONFIG="/etc/VPN/conf/France_config"
+

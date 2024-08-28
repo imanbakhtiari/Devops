@@ -1,0 +1,76 @@
+#!/bin/bash
+if [ -f "/etc/VPN/conf/vpn_config" ]; then
+    vpn_config=/etc/VPN/conf/vpn_config
+    source  $vpn_config
+    values=($(< $vpn_config))
+    for i in ${values[@]}; do
+        i=$(sed 's/"//g' <<< "$i")
+        export $i
+    done
+echo 
+    check-conf(){
+        if [ -n "$3" ]; then
+                if [[ -f $3 ]]; then
+                vpn_client_config="$3"
+                bash $CLIENT_DIR/$2 $vpn_client_config
+            else
+                echo "File Is Not Valid"
+                    /bin/vpn $1
+                fi
+        else
+            if [[ -f $MAIN_CLIENT_CONFIG ]]; then
+                vpn_client_config=$MAIN_CLIENT_CONFIG
+                    bash $CLIENT_DIR/$2 $vpn_client_config
+            else
+                echo "Changing Default VPN CLIENT..."
+                bash $CLIENT_DIR/vpn-choice.sh $vpn_config
+                /bin/vpn $1
+            fi
+        fi
+    }
+    if [ -n "$1" ]; then
+        case "$1" in
+            start)
+                echo "Starting VPN..."
+                check-conf start vpn-connect.sh $2
+                ;;
+            stop)
+                echo "Stopping VPN..."
+                check-conf stop vpn-disconnect.sh $2
+                ;;
+            setup)
+                echo "Setuping VPN..."
+                bash $CLIENT_DIR/setup-client.sh $vpn_config
+                ;;
+            change)
+                echo "Changing Default VPN CLIENT..."
+                bash $CLIENT_DIR/vpn-choice.sh $vpn_config
+                ;;
+            remove)
+                echo "Removing VPN CLIENT..."
+                bash $CLIENT_DIR/remove-client.sh $vpn_config
+                ;;
+            edit)
+                echo "Editing VPN CLIENT..."
+                bash $CLIENT_DIR/vpn-edit.sh $vpn_config
+                ;;
+            show)
+                echo "Show VPN CLIENT..."
+                bash $CLIENT_DIR/vpn-show.sh $vpn_config
+                ;;
+            cmd)
+                echo "Transfer To Cmd Mode "
+                $CLIENT_DIR/vpnclient start
+                $CLIENT_DIR/vpncmd /CLIENT localhost /CMD
+            ;;
+            *)
+                echo "Invalid input. Please enter 'start' or 'stop' or 'setup'."
+                ;;
+        esac
+    else
+        echo "Please provide 'start' or 'stop' or 'setup' as an argument."
+    fi
+else
+    echo "VPN configuration file not found: /etc/VPN/conf/vpn_config"
+fi
+
