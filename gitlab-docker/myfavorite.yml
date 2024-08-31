@@ -1,3 +1,4 @@
+## NAT YOUR SERVER acme-v02.api.letsencrypt.org for this for auto renew
 version: '3.8'
 services:
   gitlab:
