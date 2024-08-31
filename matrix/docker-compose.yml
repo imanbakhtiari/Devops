@@ -1,0 +1,41 @@
+version: '3.7'
+
+services:
+  # Synapse (Matrix server)
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    restart: always
+    volumes:
+      - ./data/synapse:/data
+    environment:
+      - SYNAPSE_SERVER_NAME=chat.company.ir
+      - SYNAPSE_REPORT_STATS=yes
+    ports:
+      - "8008:8008"
+      - "8448:8448"
+    depends_on:
+      - postgres
+
+  # Postgres database
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: synapse
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: synapse
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  # Element Web (Matrix web client)
+  element-web:
+    image: vectorim/element-web:latest
+    container_name: element-web
+    restart: always
+    volumes:
+      - ./data/element:/app/config
+    ports:
+      - "80:80"
+
