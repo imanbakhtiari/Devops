@@ -1,0 +1,13 @@
+$TTL 3600
+@       IN      SOA     company.ir. root.company.ir. (
+                     8          ; Serial
+                     3600       ; Refresh
+                     1800       ; Retry
+                     604800     ; Expire
+                     3600 )     ; Minimum TTL
+
+@       IN      NS      ns1.company.ir.
+
+ns1     IN      A               10.130.0.50
+@               IN      A       10.130.0.1
+metabase         IN      A       10.130.0.1

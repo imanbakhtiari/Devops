@@ -1,0 +1,80 @@
+view General{
+match-destinations {10.130.0.50;};
+        zone "ir" {
+                type forward;
+                forward only;
+                forwarders { 8.8.8.8;1.1.1.1; };
+        };
+//      zone "adliran.ir" {
+//                type forward;
+//                forward only;
+//                forwarders { 1.1.1.1;8.8.8.8; };
+//        };
+//      zone "bmi.ir" {
+//                type forward;
+//                forward only;
+//                forwarders { 1.1.1.1;8.8.8.8; };
+//        };
+        zone "iranecar.com" {
+                type forward;
+                forward only;
+                forwarders { 1.1.1.1;8.8.8.8; };
+        };
+        zone "anydesk.com" {
+                type forward;
+                forward only;
+                forwarders { 1.1.1.1;8.8.8.8; };
+        };
+        zone "aparat.com" {
+                type forward;
+                forward only;
+                forwarders { 1.1.1.1;8.8.8.8; };
+        };
+        zone "postman.com" {
+                type forward;
+                forward only;
+                forwarders { 1.1.1.1;8.8.8.8; };
+        };
+        zone "getpostman.com" {
+                type forward;
+                forward only;
+                forwarders { 1.1.1.1;8.8.8.8; };
+        };
+        zone "postman.co" {
+                type forward;
+                forward only;
+                forwarders { 1.1.1.1;8.8.8.8; };
+        };
+        zone "telewebion.com" {
+                type forward;
+                forward only;
+                forwarders { 1.1.1.1;8.8.8.8; };
+        };
+        zone "digikala.com" {
+                type forward;
+                forward only;
+                forwarders { 1.1.1.1;8.8.8.8; };
+        };
+        zone "faraboom.co" {
+                type forward;
+                forward only;
+                forwarders { 1.1.1.1;8.8.8.8; };
+        };
+        zone "github.com" {
+                type forward;
+                forward only;
+                forwarders { 1.1.1.1;8.8.8.8; };
+        };
+        zone "company.ir" {
+                type master;
+                file "/etc/bind/zones/company.ir/db.company.ir.sec";
+        };
+        forwarders{
+                8.8.8.8;
+        };
+        forward only;
+        allow-query{any;};
+        recursion yes;
+
+};
+

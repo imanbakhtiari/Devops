@@ -1,0 +1,24 @@
+options {
+        listen-on port 53 { 10.130.0.50;};
+        directory "/var/cache/bind/";
+        dump-file "/var/cache/bind/data/cache_dump.db";
+        statistics-file "/var/cache/bind/data/bind_stats.txt";
+        memstatistics-file "/var/cache/bind/data/bind_mem_stats.txt";
+        bindkeys-file "/etc/bind/bind.iscdlv.keys";
+        managed-keys-directory "/var/cache/bind/";
+        recursion yes;
+
+         forwarders {
+                1.1.1.1;
+                //8.8.8.8;
+        };
+        //forward only;
+        allow-query{any;};
+        dnssec-validation no;
+        auth-nxdomain no;
+      //dnssec-enable yes;
+     // dnssec-validation yes;
+      //dnssec-lookaside no;
+      // auth-nxdomain no;
+};
+
