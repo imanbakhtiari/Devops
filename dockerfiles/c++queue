@@ -1,0 +1,26 @@
+#/my-project
+#│
+#├── Dockerfile
+#├── main.cpp
+#└── queue.h       # Header file for the static queue implementation
+#└── queue.cpp     # Source file for the static queue implementation
+
+# Start with a base image that has build tools and a compiler
+FROM gcc:12
+
+# Set the Current Working Directory inside the container
+WORKDIR /app
+
+# Copy the C++ source code into the container
+COPY . .
+
+# Install any required packages (if necessary)
+RUN apt-get update && apt-get install -y cmake build-essential
+
+# Build the application using g++
+RUN g++ -o myapp main.cpp queue.cpp
+
+# Command to run the executable
+ENTRYPOINT ["./myapp"]
+
+
