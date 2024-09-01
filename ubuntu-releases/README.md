@@ -11,6 +11,7 @@
 - **Ubuntu 18.04 LTS (Bionic Beaver)**
 - **Ubuntu 20.04 LTS (Focal Fossa)**
 - **Ubuntu 22.04 LTS (Jammy Jellyfish)**
+- **Ubuntu 24.04 LTS (Noble Numbat)**
 
 ## Non-LTS Releases
 
