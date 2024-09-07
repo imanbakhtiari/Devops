@@ -1,0 +1,23 @@
+# Use Ubuntu focal (20.04) as the base image
+FROM ubuntu:20.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV QT_SELECT=qt5
+
+# Update and install required packages
+RUN apt-get update && \
+    apt-get install -y \
+    build-essential \
+    g++ \
+    make \
+    qt5-qmake \
+    qtbase5-dev \
+    libqt5websockets5-dev \
+    qtbase5-dev-tools \
+    qtdeclarative5-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify installations
+RUN qtchooser -l && qmake --version && g++ --version && make --version
+
