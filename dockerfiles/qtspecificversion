@@ -1,0 +1,43 @@
+# Use an Ubuntu base image
+FROM ubuntu:20.04
+
+# Set environment variables to avoid interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install required packages
+RUN apt-get update && \
+    apt-get install -y \
+    build-essential \
+    libgl1-mesa-dev \
+    libx11-dev \
+    libxkbcommon-x11-dev \
+    libxext-dev \
+    libxi-dev \
+    libxrandr-dev \
+    libxcomposite-dev \
+    libxdamage-dev \
+    libxfixes-dev \
+    libfontconfig1-dev \
+    libdbus-1-dev \
+    libssl-dev \
+    libsqlite3-dev \
+    libbz2-dev \
+    wget \
+    tar \
+    xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download and install Qt 5.12.12 from the online installer
+RUN wget https://download.qt.io/archive/qt/5.12/5.12.12/qt-opensource-linux-x64-5.12.12.run \
+    && chmod +x qt-opensource-linux-x64-5.12.12.run \
+    && ./qt-opensource-linux-x64-5.12.12.run --silent --platform minimal \
+    && rm qt-opensource-linux-x64-5.12.12.run
+
+# Set environment variables for Qt
+ENV PATH=/opt/qt5.12.12/bin:$PATH
+ENV LD_LIBRARY_PATH=/opt/qt5.12.12/lib:$LD_LIBRARY_PATH
+ENV CMAKE_PREFIX_PATH=/opt/qt5.12.12
+
+# Define the default command
+CMD [ "bash" ]
+
