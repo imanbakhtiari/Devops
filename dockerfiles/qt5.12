@@ -1,4 +1,4 @@
-# Use Ubuntu focal (20.04) as the base image
+# Use Ubuntu Focal (20.04) as the base image
 FROM ubuntu:20.04
 
 # Set environment variables
@@ -16,6 +16,7 @@ RUN apt-get update && \
     libqt5websockets5-dev \
     qtbase5-dev-tools \
     qtdeclarative5-dev \
+    mingw-w64 \
     && rm -rf /var/lib/apt/lists/*
 
 # Verify installations
