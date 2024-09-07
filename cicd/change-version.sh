@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the path to your docker-compose.yml
-COMPOSE_FILE="docker-compose.yml"
+COMPOSE_FILE="./docker-compose.yml"
 
 # Define the name of the service and the image base name
 SERVICE_NAME="your_service_name"
@@ -10,10 +10,9 @@ IMAGE_BASE_NAME="your_docker_image_name"
 # Extract the current version from the docker-compose.yml file
 current_version=$(awk -v service="$SERVICE_NAME" -v image_base="$IMAGE_BASE_NAME" '
   $0 ~ service && $0 ~ image_base {
-    match($0, /:v[0-9]+/, version);
-    if (version[0] != "") {
-      gsub("v", "", version[0]);
-      print version[0];
+    match($0, /:v([0-9]+)/, version);
+    if (version[1] != "") {
+      print version[1];
     }
   }
 ' $COMPOSE_FILE)
