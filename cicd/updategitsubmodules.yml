@@ -15,7 +15,7 @@ update_all_submodules:
         git config --global user.email "your-email@example.com";  # Set the Git config for commit
         git config --global user.name "CI/CD Pipeline";
         git add .;  # Stage changes
-        git commit -m "CI: Update all submodules to the latest versions";  # Commit changes
+        git commit -m "CI Update all submodules to the latest versions";  # Commit changes
         git push origin HEAD:master;  # Push changes back to the main project
       else
         echo "No updates in submodules.";
