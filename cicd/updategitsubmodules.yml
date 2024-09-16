@@ -1,31 +1,29 @@
+variables:
+  CI_REPOSITORY_URL: "https://your-remote-repository-url.git"
+  CI_COMMIT_USER_EMAIL: "your-email@example.com"
+  CI_COMMIT_USER_NAME: "CI/CD Pipeline"
+
 stages:
   - update
 
-# Update submodules for all 5 projects in one stage
 update_all_submodules:
   stage: update
   script:
     # Step 1: Initialize and update all submodules
     - git submodule update --init --recursive
     - git submodule update --remote --recursive
-    
-    # Step 2: Check for changes in submodules
+
+    # Step 2: Configure Git and commit changes
+    - git config --global user.email "$CI_COMMIT_USER_EMAIL"  # Set the Git config for commit
+    - git config --global user.name "$CI_COMMIT_USER_NAME"
+    - git remote set-url origin "$CI_REPOSITORY_URL"  # Ensure the correct remote URL is set
     - if [[ $(git status --porcelain) ]]; then
         echo "Submodules have updates. Preparing to commit...";
-        git config --global user.email "your-email@example.com";  # Set the Git config for commit
-        git config --global user.name "CI/CD Pipeline";
-        git add .;  # Stage changes
+        git add .gitmodules;  # Add the .gitmodules file if it changed
+        git add .;  # Stage changes (updates in submodule references)
         git commit -m "CI Update all submodules to the latest versions";  # Commit changes
         git push origin HEAD:master;  # Push changes back to the main project
       else
         echo "No updates in submodules.";
       fi
-  only:
-    - schedules  # This job will run on a schedule (e.g., daily or weekly)
-
-#To schedule your pipeline in GitLab:
-
-#Go to CI / CD > Schedules in your GitLab project.
-#Click on New Schedule.
-#Configure the schedule (e.g., daily at 12:00 AM) and save it.
 
