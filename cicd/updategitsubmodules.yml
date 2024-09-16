@@ -1,0 +1,31 @@
+stages:
+  - update
+
+# Update submodules for all 5 projects in one stage
+update_all_submodules:
+  stage: update
+  script:
+    # Step 1: Initialize and update all submodules
+    - git submodule update --init --recursive
+    - git submodule update --remote --recursive
+    
+    # Step 2: Check for changes in submodules
+    - if [[ $(git status --porcelain) ]]; then
+        echo "Submodules have updates. Preparing to commit...";
+        git config --global user.email "your-email@example.com";  # Set the Git config for commit
+        git config --global user.name "CI/CD Pipeline";
+        git add .;  # Stage changes
+        git commit -m "CI: Update all submodules to the latest versions";  # Commit changes
+        git push origin HEAD:master;  # Push changes back to the main project
+      else
+        echo "No updates in submodules.";
+      fi
+  only:
+    - schedules  # This job will run on a schedule (e.g., daily or weekly)
+
+#To schedule your pipeline in GitLab:
+
+#Go to CI / CD > Schedules in your GitLab project.
+#Click on New Schedule.
+#Configure the schedule (e.g., daily at 12:00 AM) and save it.
+
