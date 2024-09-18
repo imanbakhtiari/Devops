@@ -1,15 +1,23 @@
 stages:
   - release
 
+variables:
+  # URL of your GitLab instance
+  GITLAB_URL: "https://gitlab.example.com"
+  # Release version to be used in naming the release
+  RELEASE_VERSION: "v1.0.0"  # You can set this dynamically or through GitLab CI/CD variables
+  # Path to the file you want to upload
+  FILE_PATH: "path/to/your/file"  # Set this to the actual path of your file
+
 upload_release:
   stage: release
   script:
     - |
       # Create a release
-      curl --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" --data "name=Release ${RELEASE_VERSION}&tag_name=${RELEASE_VERSION}&description=Release description" "https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/releases"
+      curl --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" --data "name=Release ${RELEASE_VERSION}&tag_name=${RELEASE_VERSION}&description=Release description" "${GITLAB_URL}/api/v4/projects/${CI_PROJECT_ID}/releases"
       
       # Upload a file
-      curl --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" --upload-file path/to/your/file "https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/uploads"
+      curl --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${FILE_PATH} "${GITLAB_URL}/api/v4/projects/${CI_PROJECT_ID}/uploads"
   only:
     - tags
 
