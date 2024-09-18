@@ -4,7 +4,8 @@ variables:
   CI_COMMIT_USER_NAME: "CI/CD Pipeline"
 
 stages:
-  - update
+  - update        # List of stages for jobs, and their order of execution
+  - build
 
 update_all_submodules:
   stage: update
@@ -17,7 +18,8 @@ update_all_submodules:
     - git config --global user.email "$CI_COMMIT_USER_EMAIL"  # Set the Git config for commit
     - git config --global user.name "$CI_COMMIT_USER_NAME"
     - git remote set-url origin "$CI_REPOSITORY_URL"  # Ensure the correct remote URL is set
-    - if [[ $(git status --porcelain) ]]; then
+    - |
+      if [[ $(git status --porcelain) ]]; then
         echo "Submodules have updates. Preparing to commit...";
         git add .gitmodules;  # Add the .gitmodules file if it changed
         git add .;  # Stage changes (updates in submodule references)
@@ -26,4 +28,3 @@ update_all_submodules:
       else
         echo "No updates in submodules.";
       fi
-
