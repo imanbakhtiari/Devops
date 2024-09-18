@@ -1,0 +1,15 @@
+stages:
+  - release
+
+upload_release:
+  stage: release
+  script:
+    - |
+      # Create a release
+      curl --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" --data "name=Release ${RELEASE_VERSION}&tag_name=${RELEASE_VERSION}&description=Release description" "https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/releases"
+      
+      # Upload a file
+      curl --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" --upload-file path/to/your/file "https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/uploads"
+  only:
+    - tags
+
