@@ -1,0 +1,33 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  IMAGE_NAME: "my_image"           # Replace with your Docker image name
+  IMAGE_TAG: "latest"              # Use a dynamic tag if needed (e.g., commit SHA)
+  REGISTRY_URL: "gitlab.example.com"  # Replace with your local GitLab URL
+  REGISTRY_PATH: "namespace/project"   # Replace with your project namespace and name
+
+# Build Docker image
+build_image:
+  stage: build
+  script:
+    - docker build -t ${REGISTRY_URL}/${REGISTRY_PATH}/${IMAGE_NAME}:${IMAGE_TAG} .
+    - docker login ${REGISTRY_URL} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
+    - docker push ${REGISTRY_URL}/${REGISTRY_PATH}/${IMAGE_NAME}:${IMAGE_TAG}
+  only:
+    - main   # or specify other branches or tags
+
+# Create a release and attach Docker image URL
+create_release:
+  stage: deploy
+  script:
+    - |
+      # Create a release
+      curl --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" --data "name=Release ${CI_COMMIT_REF_NAME}&tag_name=${CI_COMMIT_REF_NAME}&description=Release description" "https://${REGISTRY_URL}/api/v4/projects/${CI_PROJECT_ID}/releases"
+      
+      # Attach Docker image URL to the release
+      curl --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" --data "description=Docker image URL: ${REGISTRY_URL}/${REGISTRY_PATH}/${IMAGE_NAME}:${IMAGE_TAG}" "https://${REGISTRY_URL}/api/v4/projects/${CI_PROJECT_ID}/releases/${CI_COMMIT_REF_NAME}/assets/links" --form "name=Docker Image" --form "url=${REGISTRY_URL}/${REGISTRY_PATH}/${IMAGE_NAME}:${IMAGE_TAG}"
+  only:
+    - tags
+
