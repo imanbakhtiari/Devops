@@ -1,0 +1,32 @@
+stages:
+  - release
+
+variables:
+  GITLAB_URL: "https://gitlab.example.com"
+  # Path to the file you want to upload
+  FILE_PATH: "path/to/your/file"  # Set this to the actual path of your file
+  INITIAL_VERSION: "v1.0.0"       # The initial version to start with
+
+increment_version:
+  stage: release
+  script:
+    - |
+      # Fetch the latest tag or use the initial version if no tags are present
+      LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo ${INITIAL_VERSION})
+      echo "Latest tag: ${LATEST_TAG}"
+      
+      # Increment the version number (simple patch version increment)
+      VERSION_BASE=${LATEST_TAG/v/}
+      IFS='.' read -r -a VERSION_PARTS <<< "$VERSION_BASE"
+      PATCH_VERSION=$((VERSION_PARTS[2] + 1))
+      NEW_VERSION="v${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH_VERSION"
+      echo "New version: ${NEW_VERSION}"
+      
+      # Create a release
+      curl --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" --data "name=Release ${NEW_VERSION}&tag_name=${NEW_VERSION}&description=Release description" "${GITLAB_URL}/api/v4/projects/${CI_PROJECT_ID}/releases"
+      
+      # Upload the file
+      curl --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${FILE_PATH} "${GITLAB_URL}/api/v4/projects/${CI_PROJECT_ID}/uploads"
+  only:
+    - tags
+
