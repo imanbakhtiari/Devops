@@ -1,0 +1,59 @@
+# Stage 1: Build Stage
+FROM yshurik/mxe-qt:windows_64_shared.posix AS builder
+
+# Set environment variables
+ENV PATH=/usr/bin:$PATH
+ENV MXE_TARGET=x86_64-w64-mingw32
+
+# Fix sources.list by replacing the old URLs with archive URLs and remove invalid entries
+RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
+    sed -i '/stretch-updates/d' /etc/apt/sources.list && \
+    sed -i '/security.debian.org/d' /etc/apt/sources.list && \
+    echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until && \
+    apt-get update
+
+# Add i386 architecture for 32-bit Wine support and install necessary packages
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    wine \
+    wine64 \
+    wine32 \
+    wget \
+    xvfb \
+    xauth
+
+# Install winetricks from GitHub
+RUN wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks && \
+    chmod +x winetricks && \
+    mv winetricks /usr/local/bin/
+
+# Install wine-gecko for HTML rendering
+RUN wget https://dl.winehq.org/wine/wine-gecko/2.47.1/wine-gecko-2.47.1-x86.msi && \
+    wget https://dl.winehq.org/wine/wine-gecko/2.47.1/wine-gecko-2.47.1-x86_64.msi && \
+    wine64 msiexec /i wine-gecko-2.47.1-x86_64.msi && \
+    wine msiexec /i wine-gecko-2.47.1-x86.msi && \
+    rm wine-gecko-2.47.1-x86_64.msi wine-gecko-2.47.1-x86.msi
+
+# Copy your Qt project files into the container
+WORKDIR /app
+COPY . .
+
+# Build the project
+RUN qmake server.pro && make VERBOSE=1
+
+# Copy required DLLs from MXE environment to the release directory
+RUN cp /mxe/usr/x86_64-w64-mingw32.shared.posix/bin/*.dll ./release/
+
+# Copy Qt DLLs (Qt5Core, Qt5Network, Qt5WebSockets, etc.)
+RUN cp /mxe/usr/x86_64-w64-mingw32.shared.posix/qt5/bin/*.dll ./release/
+
+
+# Run winecfg to create a clean wine prefix
+RUN WINEPREFIX=/root/.wine winecfg
+
+# Start xvfb and run the app in a virtual framebuffer with debug info
+CMD xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" WINEDEBUG=+all wine ./release/app.exe
+
+ENTRYPOINT ["sh", "-c", "while true; do sleep 3600; done"]
+
