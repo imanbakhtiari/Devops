@@ -1,0 +1,3 @@
+# put this at the end
+ENTRYPOINT ["sh", "-c", "while true; do sleep 3600; done"]
+
