@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  rabbitmq1:
+    image: rabbitmq:3-management
+    container_name: rabbitmq1
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_ERLANG_COOKIE: secretcookie
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    volumes:
+      - rabbitmq1_data:/var/lib/rabbitmq
+
+  rabbitmq2:
+    image: rabbitmq:3-management
+    container_name: rabbitmq2
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_ERLANG_COOKIE: secretcookie
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    volumes:
+      - rabbitmq2_data:/var/lib/rabbitmq
+
+  rabbitmq3:
+    image: rabbitmq:3-management
+    container_name: rabbitmq3
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_ERLANG_COOKIE: secretcookie
+    ports:
+      - "5674:5672"
+      - "15674:15672"
+    volumes:
+      - rabbitmq3_data:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq1_data:
+  rabbitmq2_data:
+  rabbitmq3_data:
+
+
+## and afteer that docker compose up 
+#docker exec -it rabbitmq1 rabbitmqctl stop_app
+#docker exec -it rabbitmq1 rabbitmqctl join_cluster rabbit@rabbitmq2
+#docker exec -it rabbitmq1 rabbitmqctl join_cluster rabbit@rabbitmq3
+#docker exec -it rabbitmq1 rabbitmqctl start_app
+
+
+## and then 
+## docker exec -it rabbitmq1 rabbitmqctl set_policy ha-all "^" '{"ha-mode":"all"}'
+
