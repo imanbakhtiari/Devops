@@ -1,0 +1,25 @@
+# Stage 1: Build the application
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+WORKDIR /app
+
+# Copy the .csproj file and restore dependencies
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy the remaining source code and build the project
+COPY . ./
+RUN dotnet publish -c Release -o /out
+
+# Stage 2: Create the runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
+WORKDIR /app
+
+# Copy the build output from the previous stage
+COPY --from=build-env /out .
+
+# Expose port 80 for the application
+EXPOSE 80
+
+# Set the entrypoint to run the application
+ENTRYPOINT ["dotnet", "YourAppName.dll"]
+
