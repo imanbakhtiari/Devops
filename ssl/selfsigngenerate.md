@@ -39,3 +39,8 @@ openssl x509 -req -days 365 -in request.csr -CA ca.crt -CAkey ca.key -set_serial
 - Domain Private Key: private.key
 - Certificate Signing Request: request.csr (optional; used for signing)
 - Signed Domain Certificate: certificate.crt
+
+## Usage
+- Use ca.crt to establish trust for clients that need to validate certificates issued by this CA.
+- Use certificate.crt and private.key in your web server configuration for mail.basa.ir.
+
