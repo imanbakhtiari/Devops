@@ -1,0 +1,2 @@
+ssh-copy-id -o StrictHostKeyChecking=no basa@10.130.5.172
+
