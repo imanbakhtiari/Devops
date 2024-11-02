@@ -1,0 +1,64 @@
+version: '3.9'
+
+services:
+  bacula-dir:
+    image: larskanis/bacula-director
+    container_name: bacula-dir
+    environment:
+      - DB_USER=bacula
+      - DB_PASSWORD=bacula_pass
+      - DB_NAME=bacula
+    volumes:
+      - ./config/bacula-dir.conf:/etc/bacula/bacula-dir.conf
+    networks:
+      - bacula-net
+    depends_on:
+      - db
+    ports:
+      - "9101:9101"  # Bacula Director default port
+
+  bacula-sd:
+    image: larskanis/bacula-storage
+    container_name: bacula-sd
+    environment:
+      - DB_USER=bacula
+      - DB_PASSWORD=bacula_pass
+      - DB_NAME=bacula
+    volumes:
+      - ./config/bacula-sd.conf:/etc/bacula/bacula-sd.conf
+      - ./backup-storage:/backup  # Location to store backups
+    networks:
+      - bacula-net
+    ports:
+      - "9103:9103"  # Bacula Storage Daemon default port
+
+  bacula-fd:
+    image: larskanis/bacula-fd
+    container_name: bacula-fd
+    environment:
+      - DB_USER=bacula
+      - DB_PASSWORD=bacula_pass
+      - DB_NAME=bacula
+    volumes:
+      - ./config/bacula-fd.conf:/etc/bacula/bacula-fd.conf
+    networks:
+      - bacula-net
+    ports:
+      - "9102:9102"  # Bacula File Daemon default port
+
+  db:
+    image: postgres:13
+    container_name: bacula-db
+    environment:
+      - POSTGRES_DB=bacula
+      - POSTGRES_USER=bacula
+      - POSTGRES_PASSWORD=bacula_pass
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    networks:
+      - bacula-net
+
+networks:
+  bacula-net:
+    driver: bridge
+
