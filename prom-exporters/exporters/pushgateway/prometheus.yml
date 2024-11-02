@@ -1,0 +1,5 @@
+scrape_configs:
+  - job_name: 'pushgateway'
+    static_configs:
+      - targets: ['pushgateway:9091']  # Replace with the actual Pushgateway address
+

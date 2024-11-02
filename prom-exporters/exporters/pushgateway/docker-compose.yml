@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: prometheus-pushgateway
+    ports:
+      - "9091:9091"
+
