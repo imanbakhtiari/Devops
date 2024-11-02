@@ -1,0 +1,25 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname']
+  receiver: 'sms'
+  repeat_interval: 1h
+
+receivers:
+  - name: 'sms'
+    webhook_configs:
+      - url: 'https://sms-api.example.com/send'
+        send_resolved: true
+        http_config:
+          basic_auth:
+            username: 'your-username'
+            password: 'your-password'
+          headers:
+            Content-Type: application/json
+        message: |
+          {
+            "to": "recipient-phone-number",
+            "message": "{{ range .Alerts }}⚠️ ALERT: {{ .Labels.alertname }}\nInstance: {{ .Labels.instance }}\nSeverity: {{ .Labels.severity }}\nDescription: {{ .Annotations.description }}\n\n{{ end }}"
+          }
+
