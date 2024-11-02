@@ -1,0 +1,16 @@
+scrape_configs:
+  - job_name: 'blackbox_wallet'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  # Specify the module to use (defined in blackbox.yml)
+    static_configs:
+      - targets:
+          - "https://wallet.domain.tld"  # The URL to monitor
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115  # The Blackbox Exporter's address
+

@@ -1,0 +1,21 @@
+groups:
+  - name: wallet-monitoring
+    rules:
+      - alert: WalletServiceDown
+        expr: probe_success == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Wallet service is down"
+          description: "The wallet service ({{ $labels.instance }}) is unreachable or returned an error."
+
+      - alert: WalletServiceLatencyHigh
+        expr: probe_duration_seconds > 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Wallet service response time is high"
+          description: "The wallet service ({{ $labels.instance }}) response time is above 1 second."
+

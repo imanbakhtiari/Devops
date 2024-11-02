@@ -1,0 +1,11 @@
+modules:
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+      valid_status_codes: []  # Defaults to 2xx status codes; you can specify others if needed
+      method: GET
+      fail_if_ssl: false      # Set to true if SSL is required
+      fail_if_not_ssl: true   # Set to true if the endpoint should use HTTPS
+
