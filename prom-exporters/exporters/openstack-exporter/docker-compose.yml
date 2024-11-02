@@ -1,0 +1,24 @@
+# docker-compose.yml
+version: '3.9'
+
+services:
+  openstack_exporter:
+    image: openstack-exporter:latest
+    container_name: openstack_exporter
+    environment:
+      - OS_AUTH_URL=<YOUR_OPENSTACK_AUTH_URL>
+      - OS_USERNAME=<YOUR_OPENSTACK_USERNAME>
+      - OS_PASSWORD=<YOUR_OPENSTACK_PASSWORD>
+      - OS_PROJECT_NAME=<YOUR_PROJECT_NAME>
+      - OS_PROJECT_DOMAIN_NAME=<YOUR_PROJECT_DOMAIN>
+      - OS_USER_DOMAIN_NAME=<YOUR_USER_DOMAIN>
+      - OS_REGION_NAME=<YOUR_REGION_NAME>
+    ports:
+      - "9183:9183"
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    external: true
+
