@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    environment:
+      - WATCHTOWER_CLEANUP=true          # Removes old images after updating
+      - WATCHTOWER_POLL_INTERVAL=300      # Checks for updates every 300 seconds (5 minutes)
+      - WATCHTOWER_INCLUDE_STOPPED=false  # Update only running containers
+      # Add Slack or other notification options if needed
+      # - WATCHTOWER_NOTIFICATIONS=slack
+      # - WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL=<your_slack_webhook>
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
