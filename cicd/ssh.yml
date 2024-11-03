@@ -1,0 +1,2 @@
+ssh -i ~/path/to/my_key.pem -o StrictHostKeyChecking=no user@hostname
+
