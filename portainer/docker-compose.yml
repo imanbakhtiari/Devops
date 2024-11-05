@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - "9000:9000"  # Exposes Portainer on port 9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Allows Portainer to control the Docker daemon
+      - portainer_data:/data  # Persists Portainer's data
+    restart: unless-stopped
+
+volumes:
+  portainer_data:
+
