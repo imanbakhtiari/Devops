@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0  # Replace with the latest version if needed
+    container_name: cadvisor
+    ports:
+      - "8080:8080"  # Cadvisor metrics port
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: always
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    ports:
+      - "9100:9100"  # Node Exporter metrics port
+    restart: always
+    command:
+      - "--path.rootfs=/host"  # Required for Docker container compatibility
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host:ro
+
