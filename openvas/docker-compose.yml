@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  gvm:
+    image: immauss/openvas
+    container_name: openvas
+    environment:
+      - PASSWORD=admin  # Set your admin password here
+      - USERNAME=admin  # Set your admin username here
+    ports:
+      - "9392:9392"  # OpenVAS Web UI
+      - "5433:5432"  # PostgreSQL port, required for GVM database
+    volumes:
+      - gvm-data:/data  # Persistent data storage for OpenVAS
+
+volumes:
+  gvm-data:
