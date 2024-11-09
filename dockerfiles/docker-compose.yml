@@ -6,7 +6,10 @@ services:
     container_name: api
     environment:
       - TZ=${TZ}
-    build: .
+        #    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8090:8090"
       - "5005:5005"
@@ -19,4 +22,5 @@ services:
     ## for /etc/hosts
     extra_hosts:
       - "sso.domain.tld:10.130.5.7"
-
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
