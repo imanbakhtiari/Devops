@@ -1,0 +1,52 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: YourPassForPostgres
+      POSTGRES_DB: root
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5434:5432"
+  redis:
+    image: redis:6.2-alpine
+    ports:
+      - 6379:6379
+    restart: always
+    volumes:
+      - redis_data:/data
+  celery:
+    build: .
+    command: celery -A root_app_back worker --loglevel=info
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+  celery-beat:
+    build: .
+    command: celery -A root_app_back beat --loglevel=info
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+  flower:
+    build: .
+    command: celery -A root_app_back flower
+    depends_on:
+      - web
+      - redis
+      - celery
+    environment:
+      - DEBUG=1
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+    ports:
+      - 5555:5555
+
+volumes:
+  postgres_data:
+  pg_data:
+  redis_data:
+
