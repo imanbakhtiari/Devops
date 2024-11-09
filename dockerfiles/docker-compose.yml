@@ -24,3 +24,7 @@ services:
       - "sso.domain.tld:10.130.5.7"
     volumes:
       - /etc/localtime:/etc/localtime:ro
+    logging:
+      driver: "json-file"
+      options: 
+        max-size: "1024m"
