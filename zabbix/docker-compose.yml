@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   postgresql-server:
-    image: postgres:latest
+    image: postgres-14
     container_name: postgresql-server
     restart: unless-stopped
     environment:
