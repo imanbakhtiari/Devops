@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  goaccess:
+    image: allinurl/goaccess
+    container_name: goaccess
+    environment:
+      - LANG=en_US.UTF-8
+    volumes:
+      - /var/log/nginx:/var/log/nginx:ro  # Mount the system's nginx log directory
+      - goaccess_data:/var/www/html       # Mount GoAccess output directory
+    ports:
+      - "7890:7890"  # Expose port 7890 for real-time HTML dashboard
+    command: goaccess /var/log/nginx/access.log -o /var/www/html/report.html --log-format=COMBINED --real-time-html
+    restart: always
+    networks:
+      - goaccess_net
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - goaccess_data:/usr/share/nginx/html  # Serve the GoAccess report.html file
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro  # Mount custom nginx.conf
+    ports:
+      - "8081:80"  # Expose port 8081 for serving the report
+    depends_on:
+      - goaccess
+    restart: always
+    networks:
+      - goaccess_net
+
+volumes:
+  goaccess_data:  # Named volume to share data between GoAccess and Nginx
+
+networks:
+  goaccess_net:
+    driver: bridge
+
