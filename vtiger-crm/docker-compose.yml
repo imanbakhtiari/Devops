@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  vtiger:
+    image: vtigercrm/vtiger:latest
+    container_name: vtiger
+    ports:
+      - "8080:80"
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=vtiger
+      - MYSQL_USER=vtiger
+      - MYSQL_PASSWORD=vtiger_password
+    depends_on:
+      - db
+    volumes:
+      - vtiger_data:/var/www/html
+    restart: unless-stopped
+
+  db:
+    image: mysql:5.7
+    container_name: vtiger-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=vtiger
+      - MYSQL_USER=vtiger
+      - MYSQL_PASSWORD=vtiger_password
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  vtiger_data:
+    driver: local
+  db_data:
+    driver: local
+
