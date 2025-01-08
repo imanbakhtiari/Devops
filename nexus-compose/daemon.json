@@ -1,0 +1,7 @@
+{
+  "insecure-registries": ["myregistry.example.com:5000"],
+  "registry-mirrors": [],
+  "log-level": "info",
+  "storage-driver": "overlay2"
+}
+
