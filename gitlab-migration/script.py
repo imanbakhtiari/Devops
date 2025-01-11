@@ -1,8 +1,8 @@
 import requests
 
 # Configuration
-OLD_GITLAB_URL = "https://gitlab.xaas.ir"
-NEW_GITLAB_URL = "https://gitlab2.xaas.ir"
+OLD_GITLAB_URL = "https://gitlab.domain.ir"
+NEW_GITLAB_URL = "https://gitlab2.domain.ir"
 OLD_GITLAB_TOKEN = "your_old_gitlab_personal_access_token"
 NEW_GITLAB_TOKEN = "your_new_gitlab_personal_access_token"
 
