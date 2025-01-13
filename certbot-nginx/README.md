@@ -7,6 +7,10 @@ sudo vi /etc/nginx/sites-available/domain.com
 ```
 
 ```
+ln -s /etc/nginx/sites-available/domain.com /etc/nginx/sites-enabled
+```
+
+```
 sudo nginx -t
 ```
 
