@@ -1,0 +1,22 @@
+stages:        
+  - deploy
+
+image: imanbakhtiari/docker:latest
+
+build-job:
+  stage: deploy
+  script:
+    - echo "Starting For Building the code..."
+    - mkdir -p ~/.ssh
+    - echo "$ssh_private_key_dev" >> ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - echo -e "Host * \n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - ssh -o StrictHostKeyChecking=no -p 6895 $server_user@$server_ip "docker compose down"
+    - ssh -o StrictHostKeyChecking=no -p 6895 $server_user@$server_ip "rm -rf ~/*"
+    - scp -P 6895 -r $CI_PROJECT_DIR/* $server_user@$server_ip:~/
+    - ssh -o StrictHostKeyChecking=no -p 6895 $server_user@$server_ip "docker compose -f docker-compose.yml up -d  --build"
+    - rm -f ~/.ssh/id_rsa
+    - echo "Build And Deploy complete."
+  only:
+    - master
+
