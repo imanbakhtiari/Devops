@@ -9,7 +9,7 @@
 
     <users>
         <default>
-            <password>1397.B@sa</password>
+            <password>yourpassword</password>
             <networks>
                 <ip>::/0</ip>
             </networks>
