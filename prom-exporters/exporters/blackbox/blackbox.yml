@@ -1,11 +1,72 @@
 modules:
+  icmp:
+    prober: icmp
+    timeout: 60s
+    icmp:
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: false
+
   http_2xx:
     prober: http
     timeout: 5s
     http:
-      valid_http_versions: ["HTTP/1.1", "HTTP/2"]
-      valid_status_codes: []  # Defaults to 2xx status codes; you can specify others if needed
       method: GET
-      fail_if_ssl: false      # Set to true if SSL is required
-      fail_if_not_ssl: true   # Set to true if the endpoint should use HTTPS
+      preferred_ip_protocol: "ip4"
+      fail_if_ssl: false  # Allow SSL
+      fail_if_not_ssl: false
+      tls_config:
+        insecure_skip_verify: false  # Ensure proper SSL verification
 
+  http_ssl:
+    prober: http
+    timeout: 10s
+    http:
+      method: GET
+      preferred_ip_protocol: "ip4"
+      fail_if_ssl: false
+      fail_if_not_ssl: true  # Ensures it only checks SSL sites
+      tls_config:
+        insecure_skip_verify: false  # Ensure SSL cert validation
+
+  http_post_ssl:
+    prober: http
+    timeout: 10s
+    http:
+      method: POST
+      preferred_ip_protocol: "ip4"
+      fail_if_ssl: false
+      tls_config:
+        insecure_skip_verify: false
+
+  ssl_expiry:
+    prober: http
+    timeout: 10s
+    http:
+      method: GET
+      preferred_ip_protocol: "ip4"
+      fail_if_ssl: false  # Allow SSL
+      fail_if_not_ssl: true
+      tls_config:
+        insecure_skip_verify: false  # Ensure SSL validation
+
+  http_post_2xx:
+    prober: http
+    timeout: 10s
+    http:
+      method: POST
+      preferred_ip_protocol: "ip4"
+      fail_if_ssl: false
+      fail_if_not_ssl: false
+
+  tcp_connect:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      # Add specific TCP probe configurations if needed
+
+  pop3s_banner:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      query_response:
+        - expect: "^\\+OK"
