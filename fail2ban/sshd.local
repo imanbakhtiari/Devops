@@ -1,0 +1,21 @@
+[sshd]
+enabled = true
+port    = ssh
+filter  = sshd
+logpath = %(sshd_log)s
+backend = systemd
+
+# Protection policy
+findtime = 600              # 10 minutes window
+maxretry = 5                # Max 5 failed attempts
+bantime = 86400             # Ban for 24 hours
+
+# IPs to never ban (internal, trusted)
+ignoreip = 127.0.0.1/8 ::1 192.168.0.0/16
+
+# Email notifications
+destemail = you@example.com
+sender    = fail2ban@yourserver.com
+mta       = sendmail
+action    = %(action_mwl_
+

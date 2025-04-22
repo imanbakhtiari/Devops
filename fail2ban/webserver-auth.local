@@ -1,0 +1,38 @@
+[DEFAULT]
+# Ban IP for 24 hours
+bantime  = 86400
+
+# Track failures within a 10-minute window
+findtime = 600
+maxretry = 5
+
+# Drop packets using iptables on all ports (hard block)
+banaction = iptables-allports
+
+# Whitelist localhost and your internal network
+ignoreip = 127.0.0.1/8 ::1 192.168.0.0/16
+
+# Email notification (optional)
+destemail = you@example.com
+sender = fail2ban@yourserver.com
+mta = sendmail
+action = %(action_mwl)s
+# For Slack alerts too:
+# action = %(action_mwl)s, slacknotify
+
+# --- NGINX AUTH (e.g. custom login routes returning 401) ---
+[nginx-auth]
+enabled  = true
+port     = http,https
+filter   = nginx-auth
+logpath  = /var/log/nginx/error.log
+backend  = systemd
+
+# --- APACHE AUTH (e.g. .htaccess failures) ---
+[apache-auth]
+enabled  = true
+port     = http,https
+filter   = apache-auth
+logpath  = /var/log/apache2/error.log
+backend  = systemd
+

@@ -1,0 +1,37 @@
+#/etc/fail2ban/jail.d/web-burst.local
+[DEFAULT]
+bantime  = 3600         # 1 hour ban
+findtime = 60           # 60 seconds window
+maxretry = 100          # More than 100 requests = BAN
+banaction = iptables-allports
+ignoreip = 127.0.0.1/8 ::1 192.168.0.0/16
+backend = systemd
+
+# NGINX - Too many requests (burst flood)
+[nginx-burst]
+enabled = true
+filter  = nginx-burst
+port    = http,https
+logpath = /var/log/nginx/access.log
+
+# Apache - Too many requests (burst flood)
+[apache-burst]
+enabled = true
+filter  = apache-burst
+port    = http,https
+logpath = /var/log/apache2/access.log
+
+
+
+
+#/etc/fail2ban/filter.d/nginx-burst.conf
+[Definition]
+failregex = ^<HOST> -.*"(GET|POST|HEAD).*
+ignoreregex =
+
+#/etc/fail2ban/filter.d/apache-burst.conf
+[Definition]
+failregex = ^<HOST> -.*"(GET|POST|HEAD).*
+ignoreregex =
+
+
