@@ -22,8 +22,8 @@ sudo vim /etc/apache2/mods-available/evasive.conf
 </IfModule>
 ```
 
-- iDOSPageCount 10	If 5 requests to the same URL...
-- DOSPageInterval 1	...within 1 second...
-- DOSBlockingPeriod 10	...block IP for 10 seconds
-- DOSEmailNotify	Send email when blocking
-- DOSSystemCommand	You can run iptables or fail2ban commands 
+- DOSPageCount 10	...............If 10 requests to the same URL...
+- DOSPageInterval 1	...............within 1 second...
+- DOSBlockingPeriod 10	...........block IP for 10 seconds
+- DOSEmailNotify	...............Send email when blocking
+- DOSSystemCommand	...............You can run iptables or fail2ban commands 
