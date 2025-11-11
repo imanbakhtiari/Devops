@@ -1,4 +1,7 @@
-
+- working promql
+```
+round((probe_ssl_earliest_cert_expiry{job="blackbox-ssl", instance="https://domain.tld"} - time()) / 86400)
+```
 
 ```
 sort(
