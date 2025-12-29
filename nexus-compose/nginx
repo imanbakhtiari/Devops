@@ -1,0 +1,93 @@
+# -----------------------------
+# Upstreams with keepalive pools
+# -----------------------------
+upstream nexus_ui {
+    server 127.0.0.1:8081;
+    keepalive 32;
+}
+
+upstream nexus_registry {
+    server 127.0.0.1:8082;
+    keepalive 32;
+}
+
+# -----------------------------
+# HTTP -> HTTPS redirect
+# -----------------------------
+server {
+    listen 80;
+    server_name registry.domain.tld;
+    return 301 https://$host$request_uri;
+}
+
+# -----------------------------
+# HTTPS server
+# -----------------------------
+server {
+    listen 443 ssl http2;
+    server_name registry.domain.tld;
+
+    ssl_certificate     /etc/letsencrypt/live/domain.tld/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/domain.tld/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    # Security headers
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+
+    # -----------------------------
+    # Global proxy/client settings
+    # -----------------------------
+    proxy_connect_timeout 120s;   # Time to wait for connection to upstream
+    proxy_send_timeout    120s;   # Time to wait for upstream to receive request
+    proxy_read_timeout    120s;   # Time to wait for upstream to send response
+    send_timeout          120s;   # Time to wait for client ACK
+
+    client_max_body_size 4096M;  # For large docker pushes
+
+    proxy_buffer_size          128k;
+    proxy_buffers              4 256k;
+    proxy_busy_buffers_size    256k;
+
+    # Common headers
+    proxy_set_header Host              $http_host;  # important for Nexus + Docker realm
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # Keepalive to upstreams
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+
+    # -----------------------------
+    # Docker registry traffic (/v2/)
+    # -----------------------------
+    location /v2/ {
+        proxy_pass http://nexus_registry;
+
+        # Docker pushes can stream for a long time
+        proxy_read_timeout  900s;
+        proxy_send_timeout  900s;
+
+        # Avoid buffering large layers
+        proxy_request_buffering off;
+        proxy_buffering off;
+
+        # Some clients need this for chunked uploads
+        chunked_transfer_encoding on;
+    }
+
+    # -----------------------------
+    # Nexus Web UI (everything else)
+    # -----------------------------
+    location / {
+        proxy_pass http://nexus_ui;
+
+        # UI can do websockets / long polling
+        proxy_read_timeout  900s;
+        proxy_send_timeout  900s;
+    }
+}
+
