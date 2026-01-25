@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: app-envs
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - env: poc
+            revision: poc
+            namespace: hello-poc
+          - env: stage
+            revision: stage
+            namespace: hello-stage
+          - env: prod
+            revision: main
+            namespace: hello-app
+  template:
+    metadata:
+      name: 'justtrack-{{env}}'
+    spec:
+      project: tunoo
+      source:
+        repoURL: https://gitlab.domain.de/root/argocd.git
+        targetRevision: '{{revision}}'
+        path: k8s
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+
