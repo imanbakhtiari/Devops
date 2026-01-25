@@ -1,0 +1,41 @@
+stages:
+  - build
+  - push
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DEPLOYMENT_FILE: "k8s/deployment.yaml"
+
+build:
+  stage: build
+  image: imanbakhtiari/cicd:latest
+  services:
+    - name: docker:27-dind
+      command: ["--tls=false"]
+  script:
+    - IMAGE_REF="$(grep -E '^[[:space:]]*image:[[:space:]]*' "$DEPLOYMENT_FILE" | head -n1 | sed -E 's/^[[:space:]]*image:[[:space:]]*//')"
+    - IMAGE_NAME="${IMAGE_REF%:*}"
+    - IMAGE_TAG="${IMAGE_REF##*:}"
+    - echo "IMAGE_REF=$IMAGE_REF" > build.env
+    - echo "IMAGE_NAME=$IMAGE_NAME" >> build.env
+    - echo "IMAGE_TAG=$IMAGE_TAG" >> build.env
+    - docker build -f app/Dockerfile -t "$IMAGE_REF" app
+  artifacts:
+    paths:
+      - image.tar
+    reports:
+      dotenv: build.env
+
+push:
+  stage: push
+  image: imanbakhtiari/cicd:latest
+  services:
+    - name: docker:27-dind
+      command: ["--tls=false"]
+  dependencies:
+    - build
+  script:
+    - echo "$REGISTRY_PASS" | docker login registry.tunoo.de -u "$REGISTRY_USER" --password-stdin
+    - docker push "$IMAGE_REF"
+
+
